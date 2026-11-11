@@ -53,7 +53,7 @@ int main() {
     al_register_event_source(fila, al_get_timer_event_source(timer));
 
     ALLEGRO_BITMAP* cenario = al_load_bitmap("cenario.jpeg");
-    ALLEGRO_BITMAP* nox = al_load_bitmap("nox.png");
+    ALLEGRO_BITMAP* nox = al_load_bitmap("nox_andando_novo.png");
     ALLEGRO_BITMAP* reliquia = al_load_bitmap("reliquia.png");
     ALLEGRO_BITMAP* dino = al_load_bitmap("dino.png");
     ALLEGRO_BITMAP* boss = al_load_bitmap("boss.png");
@@ -62,10 +62,22 @@ int main() {
     ALLEGRO_FONT* fonte = al_load_ttf_font("C:/Windows/Fonts/arial.ttf", 30, 0);
     ALLEGRO_FONT* fonteTitulo = al_load_ttf_font("C:/Windows/Fonts/arialbd.ttf", 40, 0);
 
-    float altura = al_get_bitmap_height(nox);
-    float largura = al_get_bitmap_width(nox);
+    //animacao nox
+    // Tamanho da hitbox do Nox
+    float largura = 64;
+    float altura = 90;
+
+    // Tamanho de cada frame da spritesheet
+    int frameLargura = 128;
+    int frameAltura = 180;
+
+    // Controle da animação
+    int frameAtual = 0;
+    int contadorAnimacao = 0;
+    int velocidadeAnimacao = 5;
+
     float x = 200;
-    float y = 1000;
+    float y = 1000 - altura;
     float velocidadex = 0;
     float velocidadey = 0;
 
@@ -105,6 +117,9 @@ int main() {
     float velocidade = 6;
     float forcadopulo = -24;
 
+    float larguraDesenho = 96;
+    float alturaDesenho = 135;
+
     bool pisandonochao = false;
     bool olharparaesquerda = false;
     bool isRodando = true;
@@ -134,14 +149,39 @@ int main() {
                     ALLEGRO_KEYBOARD_STATE teclado;
                     al_get_keyboard_state(&teclado);
 
+                    
+
                     velocidadex = 0;
+
                     if (al_key_down(&teclado, ALLEGRO_KEY_LEFT)) {
                         velocidadex = -velocidade;
                         olharparaesquerda = true;
                     }
+
                     if (al_key_down(&teclado, ALLEGRO_KEY_RIGHT)) {
                         velocidadex = velocidade;
                         olharparaesquerda = false;
+                    }
+
+                    // ANIMAÇÃO DO NOX
+                    if (velocidadex != 0) {
+
+                        contadorAnimacao++;
+
+                        if (contadorAnimacao >= velocidadeAnimacao) {
+                            frameAtual++;
+
+                            if (frameAtual >= 4) {
+                                frameAtual = 0;
+                            }
+
+                            contadorAnimacao = 0;
+                        }
+
+                    }
+                    else {
+                        frameAtual = 0;
+                        contadorAnimacao = 0;
                     }
 
                     if (pisandonochao && al_key_down(&teclado, ALLEGRO_KEY_UP)) {
@@ -224,7 +264,24 @@ int main() {
             }
 
             if (nox) {
-                al_draw_bitmap(nox, x, y, olharparaesquerda ? ALLEGRO_FLIP_HORIZONTAL : 0);
+
+                al_draw_scaled_bitmap(
+                    nox,
+
+                    frameAtual * frameLargura,
+                    0,
+                    frameLargura,
+                    frameAltura,
+
+                    x - (larguraDesenho - largura) / 2,
+                    y - (alturaDesenho - altura),
+
+                    larguraDesenho,
+                    alturaDesenho,
+
+                    olharparaesquerda ? ALLEGRO_FLIP_HORIZONTAL : 0
+                );
+
             }
 
             if (portalLiberado) {
