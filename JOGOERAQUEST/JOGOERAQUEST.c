@@ -52,11 +52,12 @@ int main() {
     al_register_event_source(fila, al_get_mouse_event_source());
     al_register_event_source(fila, al_get_timer_event_source(timer));
 
-    ALLEGRO_BITMAP* cenario = al_load_bitmap("cenario.png");
+    ALLEGRO_BITMAP* cenario = al_load_bitmap("cenario.jpeg");
     ALLEGRO_BITMAP* nox = al_load_bitmap("nox.png");
     ALLEGRO_BITMAP* reliquia = al_load_bitmap("reliquia.png");
     ALLEGRO_BITMAP* dino = al_load_bitmap("dino.png");
     ALLEGRO_BITMAP* boss = al_load_bitmap("boss.png");
+    ALLEGRO_BITMAP* icone = al_load_bitmap("era_quest.ico");
 
     ALLEGRO_FONT* fonte = al_load_ttf_font("C:/Windows/Fonts/arial.ttf", 30, 0);
     ALLEGRO_FONT* fonteTitulo = al_load_ttf_font("C:/Windows/Fonts/arialbd.ttf", 40, 0);
@@ -191,6 +192,10 @@ int main() {
                     }
                 }
             }
+        }
+
+        if (icone) {
+            al_set_display_icon(display, icone);
         }
 
         if (naTelaBoss) {
