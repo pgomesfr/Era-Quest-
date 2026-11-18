@@ -54,6 +54,7 @@ int main() {
     al_register_event_source(fila, al_get_timer_event_source(timer));
 
     ALLEGRO_BITMAP* cenario = al_load_bitmap("cenario.jpeg");
+    ALLEGRO_BITMAP* cenario2 = al_load_bitmap("cenario2.jpeg");
     ALLEGRO_BITMAP* nox = al_load_bitmap("nox.png");
     ALLEGRO_BITMAP* reliquia = al_load_bitmap("reliquia.png");
     ALLEGRO_BITMAP* dino = al_load_bitmap("dino.png");
@@ -115,6 +116,7 @@ int main() {
     bool mostrandoInfo = false;
     bool portalLiberado = false;
     bool naTelaBoss = false;
+    bool naFase2 = false;
 
     float gravidade = 0.7;
     float velocidade = 6;
@@ -148,10 +150,15 @@ int main() {
                 }
                 else if (naTelaBoss) {
                     atualizarCombate(&evento);
+
+                    if (solicitouFase2()) {
+                        naTelaBoss = false;
+                        naFase2 = true;
+                    }
                 }
             }
             else if (evento.type == ALLEGRO_EVENT_TIMER) {
-                if (!mostrandoInfo && !naTelaBoss) {
+                if (!mostrandoInfo && !naTelaBoss && !naFase2) {
                     ALLEGRO_KEYBOARD_STATE teclado;
                     al_get_keyboard_state(&teclado);
 
@@ -290,6 +297,21 @@ int main() {
         if (naTelaBoss) {
             desenharCombate();
         }
+        else if (naFase2) {
+
+            al_clear_to_color(al_map_rgb(0, 0, 0));
+
+            if (cenario2) {
+                al_draw_scaled_bitmap(
+                    cenario2,
+                    0, 0,
+                    al_get_bitmap_width(cenario2),
+                    al_get_bitmap_height(cenario2),
+                    0, 0, 1920, 1080, 0
+                );
+            }
+
+        }
         else {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
@@ -366,6 +388,7 @@ int main() {
     if (boss) al_destroy_bitmap(boss);
     if (fonte) al_destroy_font(fonte);
     if (fonteTitulo) al_destroy_font(fonteTitulo);
+    if (cenario2) al_destroy_bitmap(cenario2);
     al_destroy_timer(timer);
     al_destroy_event_queue(fila);
     al_destroy_display(display);

@@ -19,6 +19,7 @@ static int perguntaAtual = 0;
 
 static bool terminou = false;
 static bool venceu = false;
+static bool fase2Solicitada = false;
 
 typedef struct {
     const char* pergunta;
@@ -48,6 +49,7 @@ void iniciarCombate(void) {
 
     terminou = false;
     venceu = false;
+    fase2Solicitada = false;
 
     fundoCombate = al_load_bitmap("boss.jpg");
 
@@ -62,11 +64,26 @@ void iniciarCombate(void) {
 
 void atualizarCombate(ALLEGRO_EVENT* evento) {
 
-    if (terminou || evento->type != ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+    if (evento->type != ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
         return;
 
     if (evento->mouse.button != 1)
         return;
+
+    // Se o combate terminou com vitória, verifica o botão da fase 2
+    if (terminou) {
+
+        if (venceu &&
+            evento->mouse.x >= 760 && evento->mouse.x <= 1160 &&
+            evento->mouse.y >= 530 && evento->mouse.y <= 610) {
+
+            fase2Solicitada = true;
+        }
+
+        return;
+    }
+
+    
 
     int x = evento->mouse.x;
     int y = evento->mouse.y;
@@ -145,6 +162,7 @@ void desenharCombate(void) {
     );
 
     if (terminou) {
+
         const char* mensagem = venceu ?
             "VOCE VENCEU!" : "VOCE FOI DERROTADO!";
 
@@ -152,9 +170,29 @@ void desenharCombate(void) {
             al_draw_text(
                 fontePergunta,
                 al_map_rgb(255, 215, 0),
-                960, 680,
+                960, 650,
                 ALLEGRO_ALIGN_CENTER,
                 mensagem
+            );
+        }
+
+        if (venceu) {
+            al_draw_filled_rectangle(
+                760, 530, 1160, 610,
+                al_map_rgb(40, 150, 60)
+            );
+
+            al_draw_rectangle(
+                760, 530, 1160, 610,
+                al_map_rgb(255, 255, 255), 3
+            );
+
+            al_draw_text(
+                fontePergunta,
+                al_map_rgb(255, 255, 255),
+                960, 550,
+                ALLEGRO_ALIGN_CENTER,
+                "IR PARA FASE 2"
             );
         }
 
@@ -204,6 +242,10 @@ bool combateTerminou(void) {
 
 bool jogadorVenceu(void) {
     return venceu;
+}
+
+bool solicitouFase2(void) {
+    return fase2Solicitada;
 }
 
 void finalizarCombate(void) {

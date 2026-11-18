@@ -10,6 +10,7 @@ void atualizarCombate(ALLEGRO_EVENT* evento);
 void desenharCombate(void);
 bool combateTerminou(void);
 bool jogadorVenceu(void);
+bool solicitouFase2(void);
 void finalizarCombate(void);
 
 #endif
