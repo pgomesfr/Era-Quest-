@@ -53,10 +53,10 @@ int main() {
     al_register_event_source(fila, al_get_timer_event_source(timer));
 
     ALLEGRO_BITMAP* cenario = al_load_bitmap("cenario.jpeg");
-    ALLEGRO_BITMAP* nox = al_load_bitmap("nox_andando_novo.png");
+    ALLEGRO_BITMAP* nox = al_load_bitmap("nox.png");
     ALLEGRO_BITMAP* reliquia = al_load_bitmap("reliquia.png");
     ALLEGRO_BITMAP* dino = al_load_bitmap("dino.png");
-    ALLEGRO_BITMAP* boss = al_load_bitmap("boss.png");
+    ALLEGRO_BITMAP* boss = al_load_bitmap("boss.jpg");
     ALLEGRO_BITMAP* icone = al_load_bitmap("era_quest.ico");
 
     ALLEGRO_FONT* fonte = al_load_ttf_font("C:/Windows/Fonts/arial.ttf", 30, 0);
@@ -67,14 +67,16 @@ int main() {
     float largura = 64;
     float altura = 90;
 
-    // Tamanho de cada frame da spritesheet
-    int frameLargura = 128;
-    int frameAltura = 180;
 
     // Controle da animação
     int frameAtual = 0;
+    int linhaAtual = 0;
+
     int contadorAnimacao = 0;
     int velocidadeAnimacao = 5;
+
+    int frameLargura = 256;
+    int frameAltura = 360;
 
     float x = 200;
     float y = 1000 - altura;
@@ -117,7 +119,7 @@ int main() {
     float velocidade = 6;
     float forcadopulo = -24;
 
-    float larguraDesenho = 96;
+    float larguraDesenho = 152;
     float alturaDesenho = 135;
 
     bool pisandonochao = false;
@@ -163,26 +165,8 @@ int main() {
                         olharparaesquerda = false;
                     }
 
-                    // ANIMAÇÃO DO NOX
-                    if (velocidadex != 0) {
-
-                        contadorAnimacao++;
-
-                        if (contadorAnimacao >= velocidadeAnimacao) {
-                            frameAtual++;
-
-                            if (frameAtual >= 4) {
-                                frameAtual = 0;
-                            }
-
-                            contadorAnimacao = 0;
-                        }
-
-                    }
-                    else {
-                        frameAtual = 0;
-                        contadorAnimacao = 0;
-                    }
+                  
+                    
 
                     if (pisandonochao && al_key_down(&teclado, ALLEGRO_KEY_UP)) {
                         velocidadey = forcadopulo;
@@ -217,6 +201,66 @@ int main() {
                             }
                             velocidadey = 0;
                         }
+                    }
+
+                    // IDENTIFICAR ESTADO DO NOX
+
+                    int novoEstado;
+
+                    if (!pisandonochao) {
+                        if (velocidadey < 0) {
+                            novoEstado = 1; // Pulando
+                        }
+                        else {
+                            novoEstado = 2; // Caindo
+                        }
+                    }
+                    else {
+                        novoEstado = 0; // No chão
+                    }
+
+                    // TROCAR ANIMAÇÃO
+
+                    if (novoEstado != linhaAtual) {
+                        linhaAtual = novoEstado;
+                        frameAtual = 0;
+                        contadorAnimacao = 0;
+                    }
+
+                    // ANIMAÇÃO
+
+                    if (linhaAtual == 0) {
+
+                        if (velocidadex != 0) {
+                            contadorAnimacao++;
+
+                            if (contadorAnimacao >= velocidadeAnimacao) {
+                                frameAtual++;
+
+                                if (frameAtual >= 4) {
+                                    frameAtual = 0;
+                                }
+
+                                contadorAnimacao = 0;
+                            }
+                        }
+                        else {
+                            frameAtual = 0;
+                            contadorAnimacao = 0;
+                        }
+
+                    }
+                    else {
+
+                        if (frameAtual < 3) {
+                            contadorAnimacao++;
+
+                            if (contadorAnimacao >= velocidadeAnimacao) {
+                                frameAtual++;
+                                contadorAnimacao = 0;
+                            }
+                        }
+
                     }
 
                     if (reliquia && !reliquiaColetada) {
@@ -269,7 +313,7 @@ int main() {
                     nox,
 
                     frameAtual * frameLargura,
-                    0,
+                    linhaAtual* frameAltura,
                     frameLargura,
                     frameAltura,
 
