@@ -5,6 +5,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "combate.h"
 
 typedef struct {
     float x, y, w, h;
@@ -145,6 +146,9 @@ int main() {
                     mostrandoInfo = false;
                     portalLiberado = true;
                 }
+                else if (naTelaBoss) {
+                    atualizarCombate(&evento);
+                }
             }
             else if (evento.type == ALLEGRO_EVENT_TIMER) {
                 if (!mostrandoInfo && !naTelaBoss) {
@@ -273,6 +277,7 @@ int main() {
 
                     if (portalLiberado && colide(x, y, largura, altura, portal)) {
                         naTelaBoss = true;
+                        iniciarCombate();
                     }
                 }
             }
@@ -283,14 +288,7 @@ int main() {
         }
 
         if (naTelaBoss) {
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_text(fonteTitulo, al_map_rgb(255, 255, 255), 960, 40, ALLEGRO_ALIGN_CENTER, "Tela do Boss");
-
-            if (boss) {
-                al_draw_scaled_bitmap(boss,
-                    0, 0, al_get_bitmap_width(boss), al_get_bitmap_height(boss),
-                    0, 0, 1920, 1080, 0);
-            }
+            desenharCombate();
         }
         else {
             al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -359,6 +357,7 @@ int main() {
 
         al_flip_display();
     }
+    finalizarCombate();
 
     if (cenario) al_destroy_bitmap(cenario);
     if (nox) al_destroy_bitmap(nox);

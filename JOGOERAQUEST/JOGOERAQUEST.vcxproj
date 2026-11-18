@@ -152,6 +152,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="combate.c" />
     <ClCompile Include="JOGOERAQUEST.c" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +165,7 @@
     <Image Include="..\..\..\..\Downloads\era_quest.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="combate.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
